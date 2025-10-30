@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.platform.kind }}-${{ matrix.platform.target }}
-          path: dist
+          path: tools/compiler/dist
 
   sdist:
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-sdist
-          path: dist
+          path: tools/compiler/dist
 
   publish-to-test-pypi:
     if: ${{ github.event.inputs.release != 'true' }}
