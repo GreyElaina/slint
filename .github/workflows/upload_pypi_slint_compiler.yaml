@@ -88,17 +88,15 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: astral-sh/setup-uv@v7
       - uses: actions/download-artifact@v4
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
       - name: Publish to Test PyPI
-        env:
-          UV_PUBLISH_URL: https://test.pypi.org/legacy/
-        run: uv publish dist/wheels-*/*
-
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
   publish-to-pypi:
     if: ${{ github.event.inputs.release == 'true' }}
     needs: [wheel, sdist]
@@ -109,11 +107,12 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: astral-sh/setup-uv@v7
       - uses: actions/download-artifact@v4
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
       - name: Publish to PyPI
-        run: uv publish dist/wheels-*/*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
