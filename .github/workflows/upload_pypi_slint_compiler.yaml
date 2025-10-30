@@ -94,14 +94,10 @@ jobs:
           pattern: wheels-*
           path: dist
           merge-multiple: true
-      - uses: actions/download-artifact@v4
-        with:
-          name: wheels-sdist
-          path: dist
       - name: Publish to Test PyPI
         env:
           UV_PUBLISH_URL: https://test.pypi.org/legacy/
-        run: uv publish dist/*
+        run: uv publish dist/wheels-*/*
 
   publish-to-pypi:
     if: ${{ github.event.inputs.release == 'true' }}
@@ -112,19 +108,12 @@ jobs:
       url: https://pypi.org/p/slint-compiler
     permissions:
       id-token: write
-      contents: write
-      attestations: write
     steps:
+      - uses: astral-sh/setup-uv@v7
       - uses: actions/download-artifact@v4
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
         with:
-          subject-path: 'wheels-*/*'
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
       - name: Publish to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-        uses: PyO3/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        with:
-          command: upload
-          args: --non-interactive --skip-existing wheels-*/*
+        run: uv publish dist/wheels-*/*
